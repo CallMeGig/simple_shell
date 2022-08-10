@@ -1,7 +1,14 @@
-#include "shell.h"
+#include shell.h
 
-int main(void)
+/**
+ * main - creates a sipmle shell
+ * @ac: argument count
+ * @av: argument vectors
+ * @env: environmental variables
+ * Return: 0 on success
+ */
+int main(int ac, char **av, char **env)
 {
-	prompt();
+	prompt(ac, av, env);
 	return (0);
 }
