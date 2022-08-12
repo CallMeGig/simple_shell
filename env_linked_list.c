@@ -1,4 +1,4 @@
-#include shell.h
+#include "shell.h"
 
 /**
  * env_linked_list - creates a linked list from environmental variables
@@ -21,7 +21,7 @@ list_t *env_linked_list(char **env)
 
 /**
  * _env - prints environmental variables
- * @str: user's command into shell (i.e. env)
+ * @str: user's command into shell (i.e. "env")
  * @env: environmental variables
  * Return: 0 on success
  */

@@ -1,22 +1,21 @@
-#include shell.h
+#include "shell.h"
 
 /**
  * c_ignore - custom ignores spaces and newlines
- * (e.g. echo lsn ls | ./a.out)
+ * (e.g. echo "ls\n ls" | ./a.out)
  * @str: envrionmental variables
  * Return: new string
  */
 char *c_ignore(char *str)
 {
-	while (*str == ' ' || *str == '
-')
+	while (*str == ' ' || *str == '\n')
 		str++;
 	return (str);
 }
 
 /**
  * non_interactive - handles when user pipes commands into shell via pipeline
- * (e.g. echo ls/nls -al/n | ./a.out)
+ * (e.g. echo "ls/nls -al/n" | ./a.out)
  * @env: envrionmental variables
  */
 void non_interactive(list_t *env)
@@ -33,7 +32,7 @@ void non_interactive(list_t *env)
 	}
 	n_command = command;
 	command = c_ignore(command);
-	n_line = _str_tok(command, n); /* tokenize each command string */
+	n_line = _str_tok(command, "\n"); /* tokenize each command string */
 	if (n_command != NULL)
 		free(n_command);
 	n = 0;
