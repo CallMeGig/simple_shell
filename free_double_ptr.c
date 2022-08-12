@@ -14,4 +14,4 @@ void free_double_ptr(char **str)
 		i++;
 	}
 	free(str);
-} 
+}
