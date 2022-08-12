@@ -1,15 +1,14 @@
 #include shell.h
 
-void c_exit(char **str)
+/**
+ * c_exit - frees user's typed command and linked list before exiting
+ * @str: user's typed command
+ * @env: input the linked list of envirnment
+ */
+void c_exit(char **str, list_t *env)
 {
-	int n = 0;
-
-	while (str[n] != NULL) /* free user input before exiting program */
-	{
-		free(str[n]);
-		n++;
-	}
-	free(str);
+	free_double_ptr(str);
+	free_linked_list(env);
 	_exit(0);
 }
 
@@ -17,37 +16,48 @@ void c_exit(char **str)
  * _execve - execute command user typed into shell
  * @s: command user typed
  * @env: environmental variable
+ * @num: nth user command; to be used in error message
  * Return: 0 on success
  */
-int _execve(char **s, char **env)
+int _execve(char **s, list_t *env, int num)
 {
 	char *holder;
+	int status = 0, t = 0;
+	pid_t pid;
 
-	/* if access sees an existing legit full cmd path, it executes cmd */
+	/* check if command is absolute path */
 	if (access(s[0], F_OK) == 0)
 	{
-		if (execve(s[0], s, NULL) == -1)
-		{
-			perror(Error1:);
-			c_exit(s);
-		}
+		holder = s[0];
+		t = 1;
 	}
-	/* else flesh out full path and execute command */
+	/* else flesh out full path */
 	else
-	{
 		holder = _which(s[0], env);
-	}
-	if (access(holder, F_OK) != 0)
+	/* if not an executable, free */
+	if (access(holder, X_OK) != 0)
 	{
-		perror(error);
-		c_exit(s);
+		not_found(s[0], num, env);
+		free_double_ptr(s);
+		return (127);
 	}
-	else
+	else /* else fork and execute executable command */
 	{
-		if (execve(holder, s, NULL) == -1)
+		pid = fork();
+		if (pid == 0) /* if child process, execute */
 		{
-			perror(Error2:);
-			c_exit(s); /* if not a legit cmd, free and exit */
+			if (execve(holder, s, NULL) == -1)
+			{
+				not_found(s[0], num, env); /* special err msg */
+				c_exit(s, env);
+			}
+		}
+		else /* if parent, wait for child then free all */
+		{
+			wait(&status);
+			free_double_ptr(s);
+			if (t == 0)
+				free(holder);
 		}
 	}
 	return (0);
